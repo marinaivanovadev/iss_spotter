@@ -51,12 +51,20 @@ const fetchCoordsByIP = function(ip, callback) {
       callback(Error(msg), null);
       return;
     } else {
-      const latitude = data.latitude;
-      const longitude = data.longitude;
-      const latLng = {latitude, longitude};
-      callback(null, latLng);
+      const lat = data.latitude;
+      const lon = data.longitude;
+      const latLon = {lat, lon};
+      callback(null, latLon);
     }
   });
 
 };
+
+const fetchFlyoverTimes = function(latLng, alt) {
+  request(`https://iss-flyover.herokuapp.com/json/?lat=${lat}&lon=${lon}`, (error, response, body) => {
+
+  });
+
+};
+
 module.exports = { fetchMyIP, fetchCoordsByIP };
