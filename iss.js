@@ -51,20 +51,41 @@ const fetchCoordsByIP = function(ip, callback) {
       callback(Error(msg), null);
       return;
     } else {
-      const lat = data.latitude;
-      const lon = data.longitude;
-      const latLon = {lat, lon};
+      const latitude = data.latitude;
+      const longitude = data.longitude;
+      const latLon = {latitude, longitude};
       callback(null, latLon);
     }
   });
 
 };
+/**
+ * Makes a single API request to retrieve upcoming ISS fly over times the for the given lat/lng coordinates.
+ * Input:
+ *   - An object with keys `latitude` and `longitude`
+ *   - A callback (to pass back an error or the array of resulting data)
+ * Returns (via Callback):
+ *   - An error, if any (nullable)
+ *   - The fly over times as an array of objects (null if error). Example:
+ *     [ { risetime: 134564234, duration: 600 }, ... ]
+ */
 
-const fetchFlyoverTimes = function(latLng, alt) {
-  request(`https://iss-flyover.herokuapp.com/json/?lat=${lat}&lon=${lon}`, (error, response, body) => {
-
+const fetchISSFlyoverTimes = function(coordinates, callback) {
+  request(`https://iss-flyover.herokuapp.com/json/?lat=${coordinates.latitude}&lon=${coordinates.longitude}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+    if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching IP.Response: ${body}`;
+      callback(Error(msg), null);
+      return;
+    } else {
+      const data = JSON.parse(body);
+      const flies = data.response;
+      callback(null, flies);
+    }
   });
-
 };
 
-module.exports = { fetchMyIP, fetchCoordsByIP };
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyoverTimes };
